@@ -29,9 +29,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ]
+            "styles": ["src/styles.scss"]
           },
           "configurations": {
             "production": {
@@ -59,12 +57,17 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "./proxy.conf.json"
+          },
           "configurations": {
             "production": {
-              "buildTarget": "strona-artura:build:production"
+              "buildTarget": "strona-artura:build:production",
+              "proxyConfig": "./proxy.conf.json"
             },
             "development": {
-              "buildTarget": "strona-artura:build:development"
+              "buildTarget": "strona-artura:build:development",
+              "proxyConfig": "./proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

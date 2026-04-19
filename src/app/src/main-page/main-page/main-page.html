@@ -1,0 +1,53 @@
+<div class="form">
+  <form [formGroup]="requestForm">
+    <mat-form-field appearance="fill">
+      <mat-label>Słowa kluczowe</mat-label>
+      <input matInput placeholder="Słowa kluczowe" formControlName="keyWords" />
+      @if (requestForm.get('keyWords')?.hasError && requestForm.get('keyWords')?.touched) {
+        <mat-error>Musisz cos wpisac minimum 3 znaki</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Liczba stron do załadowania</mat-label>
+      <input matInput type="number" placeholder="Liczba stron" formControlName="pages" />
+      @if (requestForm.get('pages')?.hasError && requestForm.get('pages')?.touched) {
+        <mat-error>Musisz cos wpisac minimum 1 znak</mat-error>
+      }
+    </mat-form-field>
+
+    <button matButton="filled" (click)="submit()" [disabled]="requestForm.invalid">Search</button>
+  </form>
+</div>
+
+@if (loading()) {
+  <mat-spinner></mat-spinner>
+}
+
+@if (dataSource().length && !loading()) {
+  <div class="table">
+    <table mat-table [dataSource]="filteredData()" class="mat-elevation-z8">
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef>Title</th>
+        <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="brand">
+        <th mat-header-cell *matHeaderCellDef>Brand</th>
+        <td mat-cell *matCellDef="let element">{{ element.brand }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="prices">
+        <th mat-header-cell *matHeaderCellDef>Prices</th>
+        <td mat-cell *matCellDef="let element">
+          @for (price of element.prices; track price) {
+            <p>Country: {{ price.country }} Price:{{ price.price | json }}</p>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+}

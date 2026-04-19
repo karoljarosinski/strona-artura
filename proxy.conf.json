@@ -1,0 +1,13 @@
+{
+  "/api-test": {
+    "target": "https://graphql.hagglezon.com/",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api-test": "" },
+    "headers": {
+      "User-Agent": "PostmanRuntime/7.53.0",
+      "Accept": "*/*"
+    },
+    "logLevel": "debug"
+  }
+}
