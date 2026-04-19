@@ -6,6 +6,16 @@
       @if (requestForm.get('keyWords')?.hasError && requestForm.get('keyWords')?.touched) {
         <mat-error>Musisz cos wpisac minimum 3 znaki</mat-error>
       }
+      @if (requestForm.get('keyWords')?.value?.length) {
+        <button
+          matSuffix
+          matIconButton
+          aria-label="Clear"
+          (click)="requestForm.get('keyWords')?.setValue('')"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="fill">
@@ -41,7 +51,7 @@
         <th mat-header-cell *matHeaderCellDef>Prices</th>
         <td mat-cell *matCellDef="let element">
           @for (price of element.prices; track price) {
-            <p>Country: {{ price.country }} Price:{{ price.price | json }}</p>
+            <p>Country: {{ price.country }} Price:{{ price.price }}</p>
           }
         </td>
       </ng-container>

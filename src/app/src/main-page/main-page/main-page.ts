@@ -7,8 +7,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MainPageService } from '../services/main-page';
 import { ApiResponse, ProductItem } from '../../../../models/response';
 import { MatTableModule } from '@angular/material/table';
-import { JsonPipe } from '@angular/common';
 import { MatSpinner } from '@angular/material/progress-spinner';
+import { catchError, concat, delay, of, toArray } from 'rxjs';
 
 @Component({
   selector: 'app-main-page',
@@ -19,7 +19,6 @@ import { MatSpinner } from '@angular/material/progress-spinner';
     MatIconModule,
     MatButtonModule,
     MatTableModule,
-    JsonPipe,
     MatSpinner,
   ],
   templateUrl: './main-page.html',
@@ -39,14 +38,25 @@ export class MainPage {
 
   submit() {
     this.loading.set(true);
+    const keyWords = this.requestForm.get('keyWords')?.value?.split(',');
+    const requests = keyWords?.map((word) =>
+      this.mainPageService.sendRequest(word.trim(), +this.requestForm.controls.pages.value!).pipe(
+        delay(2000),
+        catchError((error) => {
+          console.error(`Error fetching data for word "${word}":`, error);
+          return of(null);
+        }),
+      ),
+    );
     if (this.requestForm.valid) {
-      this.mainPageService
-        .sendRequest(
-          this.requestForm.controls.keyWords.value!,
-          +this.requestForm.controls.pages.value!,
-        )
-        .subscribe((response: ApiResponse) => {
-          this.dataSource.set(response.data.searchProducts.products);
+      concat(...requests!)
+        .pipe(toArray())
+        .subscribe((responses: (ApiResponse | null)[]) => {
+          const product = responses
+            .filter((response): response is ApiResponse => response !== null)
+            .map((response) => response.data.searchProducts.products)
+            .flat();
+          this.dataSource.set(product);
           this.filterData();
           this.loading.set(false);
         });
@@ -59,6 +69,5 @@ export class MainPage {
         (item) => item.prices[0].price / item.prices[item.prices.length - 1].price < 0.7,
       ),
     );
-    console.log(this.filteredData());
   }
 }
